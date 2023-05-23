@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
+import personReducer from './reducer/person-reducer';
 
 export default function AppMentors() {
-  const [person, setPerson] = useState({
+  const [person, dispatch] = useReducer(personReducer, {
     name: '병민',
     title: '개발자',
     mentors: [
@@ -9,7 +10,6 @@ export default function AppMentors() {
       { name: '제임스', title: '시니어개발자' },
     ],
   });
-
   return (
     <div>
       <h1>
@@ -26,17 +26,8 @@ export default function AppMentors() {
       <button
         onClick={() => {
           const originalName = prompt('누구의 이름을 바꾸고 싶은가요?');
-          const name = prompt('이름을 무엇으로 바꾸고 싶은가요?');
-          setPerson({
-            ...person,
-            mentors: person.mentors.map((data) => {
-              if (data.name === originalName) {
-                return { ...data, name };
-              } else {
-                return data;
-              }
-            }),
-          });
+          const changeName = prompt('이름을 무엇으로 바꾸고 싶은가요?');
+          dispatch({ type: 'updatedName', prev: originalName, current: changeName });
         }}
       >
         멘토 이름 바꾸기
@@ -45,16 +36,7 @@ export default function AppMentors() {
         onClick={() => {
           const originalName = prompt('누구의 직업을 바꾸고 싶은가요?');
           const title = prompt('직업을 무엇으로 바꾸고 싶은가요?');
-          setPerson({
-            ...person,
-            mentors: person.mentors.map((data) => {
-              if (data.name === originalName) {
-                return { ...data, title };
-              } else {
-                return data;
-              }
-            }),
-          });
+          dispatch({ type: 'updateTitle', prev: originalName, current: title });
         }}
       >
         멘토 타이틀 바꾸기
@@ -63,7 +45,7 @@ export default function AppMentors() {
         onClick={() => {
           const name = prompt('추가할 멘토의 이름은 무엇인가요?');
           const title = prompt('추가할 멘토의 직업은 무엇인가요?');
-          setPerson({ ...person, mentors: [...person.mentors, { name, title }] });
+          dispatch({ type: 'added', prev: name, current: title });
         }}
       >
         멘토 추가하기
@@ -71,12 +53,7 @@ export default function AppMentors() {
       <button
         onClick={() => {
           const name = prompt('삭제할 멘토의 이름은 무엇인가요?');
-          setPerson({
-            ...person,
-            mentors: person.mentors.filter((data) => {
-              return data.name !== name;
-            }),
-          });
+          dispatch({ type: 'deleted', prev: name });
         }}
       >
         멘토 삭제하기
